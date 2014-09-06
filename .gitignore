@@ -2,26 +2,6 @@
 __pycache__/
 *.py[cod]
 
-# C extensions
-*.so
-
-# Distribution / packaging
-.Python
-env/
-bin/
-build/
-develop-eggs/
-dist/
-eggs/
-lib/
-lib64/
-parts/
-sdist/
-var/
-*.egg-info/
-.installed.cfg
-*.egg
-
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
@@ -34,21 +14,13 @@ htmlcov/
 nosetests.xml
 coverage.xml
 
-# Translations
-*.mo
+# Virtualenv
+venv/
 
-# Mr Developer
-.mr.developer.cfg
+# Other stuff
 .project
 .pydevproject
 
-# Rope
-.ropeproject
-
-# Django stuff:
-*.log
-*.pot
-
-# Sphinx documentation
-docs/_build/
-
+# Utility scripts
+push.bat
+push.sh
