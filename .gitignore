@@ -1,3 +1,16 @@
-*.pyc
+# Byte-compiled / optimized / DLL files
+*.py[cod]
+__pycache__/
+
 venv/
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Utility scripts
+push.bat
+push.sh
+
+# config
 sixdegk/config*
