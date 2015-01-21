@@ -1,40 +1,61 @@
+# -*- coding: utf-8 -*-
+
 import collections
+from tmdb3 import Person, Movie
 
-def getmovies(person):
-    pass #TODO implement
+def getmovies(person, seen=(,), nsfw=False):
+    #TODO implement ``nsfw``
+    related = []
+    for movie in person.roles + person.crew:
+        if movie.id not in seen:
+            related.append(movie)
+    return related
 
-def getpeople(movie):
-    pass #TODO implement
+def getpeople(movie, seen=(,), nsfw=False):
+    # TODO implement ``nsfw``
+    related = []
+    for person in movie.roles + movie.crew:
+        if person.id not in seen:
+            related.append(person)
+    return related
 
-def get_related_people(person):
-    related_people = []
-    for movie in getmovies(person):
-        for related_person in getpeople(movie):
-            related_people.append((person.id, movie.id, related_person.id)) #TODO change to correct id attribute
-    return related_people
+def get_related_people(person, seen=(,), nsfw=False):
+    related_people = set()
+    related_people_paths = []
+    for movie in getmovies(person.id, seen, nsfw):
+        for related_person in getpeople(movie, seen, nsfw):
+            if related_person not in related_people and related_person != person:
+                related_people_paths.append((person, movie, related_person)) #TODO change to correct id attribute
+            related_people.add(related_person)
+    return related_people_paths
 
 def findpath(start, goal, heuristic=None, verbosity=1):
     """findpath(start, goal, heuristic=None, verbosity=1): --> path list
 
-    The brains of 6°K, findpath utilizes a bidirectional tree search to find the optimal path
-    between two people nodes (but who cares about any other goal node besides Bacon?).
+    The brains of 6°K, findpath utilizes a bidirectional breadth-first search to find the
+    (hopefully) optimal path between two people nodes (but who cares about any other goal
+    node besides Bacon?).
     
-    start and goal must be two TODO ids or TODO people objects.
+    :param start: must be a TMDb id
     
-    heuristic isn't currently implemented, but when it is, it must be a callable that
-    can take a TODO object and return a float from 0 to 1, representing the relative probability
+    :param goal: also a TMDb id
+    
+    :param heuristic: this isn't currently implemented, but when it is, it must be a callable that
+    can take a TODO object and return a float from 0 to 1, estimating the relative probability
     that the goal node can be found using a path from the current node.
     
     verbosity
         0. No printed output
         1. Only print success/failure messages
         2. Also print additional info, such as the current node that is being expanded"""
+    
+    if start == goal:
+        return [[(start, None, goal)]]
 
     start_paths = collections.deque([[related] for related in get_related_people(start)])
     goal_paths = collections.deque([[related] for related in get_related_people(goal)])
-    start_seen, goal_seen = set([link[2] for link in start_paths]), set([link[2] for link in goal_paths])
-    start_seen.add(start)
-    goal_seen.add(goal)
+    start_seen = set([link[2] for link in start_paths] + [start])
+    goal_seen = set([link[2] for link in goal_paths] + [goal])
     
     while True:
         current_start_depth = len(start_paths[0])
@@ -68,7 +89,7 @@ def findpath(start, goal, heuristic=None, verbosity=1):
                 final_path = [(total_path.pop(0),)]
                 if verbosity >= 1:
                     print('Found a path of length {} from {} (id {}) to {} (id {})') #TODO
-                return reversepath(joinpaths(current_goal_path, start_paths)))
+                return reversepath(joinpaths(current_goal_path, start_paths))
             if link[0] in goal_seen:
                 continue
             else:
